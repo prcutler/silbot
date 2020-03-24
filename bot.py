@@ -1,22 +1,16 @@
 import os
 import random
-import discord
 from dotenv import load_dotenv
+from discord.ext import commands
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='!')
 
 
-@client.event
-async def on_ready():
-    print(f"{client.user} has connected to Discord.")
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+@bot.command(name='starwars')
+async def star_wars(ctx):
 
     starwars_quotes = [
         'I have a bad feeling about this.',
@@ -31,9 +25,7 @@ async def on_message(message):
         'I am one with the Force. The Force is with me.',
     ]
 
-    if message.content == 'starwars!':
-        response = random.choice(starwars_quotes)
-        await message.channel.send(response)
+    response = random.choice(starwars_quotes)
+    await ctx.send(response)
 
-
-client.run(TOKEN)
+bot.run(TOKEN)
