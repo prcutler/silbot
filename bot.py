@@ -27,7 +27,7 @@ async def on_message(message):
         'Fear is the path to the dark side. Fear leads to anger; anger leads to hate; hate leads to suffering. I sense much fear in you.',
         'Well, if droids could think, there’d be none of us here, would there?',
         'I’m just a simple man trying to make my way in the universe',
-        'So this is how liberty dies. With thunderous applause.'
+        'So this is how liberty dies. With thunderous applause.',
         'I am one with the Force. The Force is with me.',
     ]
 
