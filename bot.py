@@ -9,7 +9,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='!')
 
 
-@bot.command(name='starwars')
+@bot.command(name='starwars', help='Responds with a random Star Wars quote')
 async def star_wars(ctx):
 
     starwars_quotes = [
