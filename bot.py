@@ -6,6 +6,7 @@ from discord.utils import get
 import youtube_dl
 from os import system
 from discord import FFmpegPCMAudio
+import discord
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -96,6 +97,7 @@ async def play(ctx, url: str):
     for file in os.listdir("./"):
         if file.endswith(".mp3"):
             os.rename(file, 'song.mp3')
+    voice.play(discord.FFmpegPCMAudio)
     voice.play(discord.FFmpegPCMAudio("song.mp3"))
     voice.volume = 100
     voice.is_playing()
