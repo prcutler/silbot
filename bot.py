@@ -28,4 +28,10 @@ async def star_wars(ctx):
     response = random.choice(starwars_quotes)
     await ctx.send(response)
 
+
+@bot.command(brief="Check my ping!")
+async def ping(ctx):
+    await ctx.send(f"Your ping is: {round(client.latency * 1000)}ms.  I don't know if that is good or bad, so deal "
+                   f"with it")
+
 bot.run(TOKEN)
