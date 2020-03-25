@@ -2,11 +2,17 @@ import os
 import random
 from dotenv import load_dotenv
 from discord.ext import commands
+from discord.utils import get
+import youtube_dl
+from os import system
+from discord import FFmpegPCMAudio
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='!')
+
+queue_list = []
 
 
 @bot.command(name='starwars', help='Responds with a random Star Wars quote')
@@ -33,5 +39,72 @@ async def star_wars(ctx):
 async def ping(ctx):
     await ctx.send(f"Your ping is: {round(bot.latency * 1000)}ms.  I don't know if that is good or bad, so deal "
                    f"with it")
+
+
+@bot.command(pass_context=True, brief="Make Silbot join the voice channel")
+async def join(ctx):
+    channel = ctx.message.author.voice.channel
+    if not channel:
+        await ctx.send("What the what?")
+        return
+    voice = get(bot.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+    await voice.disconnect()
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+    await ctx.send(f"I get to play with the big kids! Joined '{channel}' channel")
+
+
+@bot.command(pass_context=True, brief="Make Silbot leave the voice channel", aliases=['quit'])
+async def leave(ctx):
+    channel = ctx.message.author.voice.channel
+    voice = get(bot.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        await voice.disconnect()
+        await ctx.send("See ya, wouldn't wanna be ya!")
+    else:
+        await ctx.send("I don't want to talk to myself!")
+
+
+@bot.command(pass_context=True, brief="Makes DJ Silbot play a song !play [url]")
+async def play(ctx, url: str):
+
+    song_there = os.path.isfile("song.mp3")
+    try:
+        if song_there:
+            os.remove("song.mp3")
+    except Exception:
+        await ctx.send("Oops, you did it again!")
+        return
+    await ctx.send("Now Playing: " + url)
+    voice = get(bot.voice_clients, guild=ctx.guild)
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+    for file in os.listdir("./"):
+        if file.endswith(".mp3"):
+            os.rename(file, 'song.mp3')
+    voice.play(discord.FFmpegPCMAudio("song.mp3"))
+    voice.volume = 100
+    voice.is_playing()
+
+
+@bot.command(pass_context=True, brief="Change the volume")
+async def volume(ctx, volume):
+    voice = get(bot.voice_clients, guild=ctx.guild)
+    voice.volume = volume
+    await ctx.send("Pump it up! Volume: " + volume)
 
 bot.run(TOKEN)
